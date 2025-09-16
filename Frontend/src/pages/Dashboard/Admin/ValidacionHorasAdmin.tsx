@@ -209,11 +209,8 @@ export default function ValidacionHorasAdmin() {
       // Construir parámetros de consulta
       const params = new URLSearchParams();
       
-      if (pageSize === 'todos') {
+      if (typeof pageSize === 'string') {
         params.append('limit', '1000000'); // Para obtener todos los registros, evitar 0
-      } else if (pageSize === 'ultimos') {
-        params.append('limit', '20');
-        params.append('ultimos', 'true');
       } else {
         params.append('limit', pageSize.toString());
         params.append('offset', ((currentPage - 1) * pageSize).toString());
@@ -230,11 +227,11 @@ export default function ValidacionHorasAdmin() {
       const response = await apiService.get(`/api/work-hours/?${params.toString()}`);
       
       console.log('📊 [DEBUG] Respuesta de horas trabajadas:', response);
-      const hours = response.results || [];
+      const hours = (response as any).results || [];
       console.log('📊 [DEBUG] Horas extraídas:', hours);
       
       setWorkHours(hours);
-      setTotalCount(response.count || 0);
+      setTotalCount((response as any).count || 0);
     } catch (err: any) {
       console.error('❌ [DEBUG] Error al cargar horas trabajadas:', err);
       setError(err.response?.data?.message || 'Error al cargar horas trabajadas');
@@ -253,7 +250,7 @@ export default function ValidacionHorasAdmin() {
       const response = await apiService.get('/api/projects/completed_pending_hours/');
       
       console.log('📊 [DEBUG] Respuesta de proyectos pendientes:', response);
-      const projects = response.results || [];
+      const projects = (response as any).results || [];
       console.log('📊 [DEBUG] Proyectos extraídos:', projects);
       
       setPendingProjects(projects);
@@ -341,7 +338,7 @@ export default function ValidacionHorasAdmin() {
       console.log('🔄 [DEBUG] Obteniendo detalles del proyecto:', row.project_id);
       const response = await apiService.get(`/api/projects/${row.project_id}/`);
       console.log('📊 [DEBUG] Detalles del proyecto obtenidos:', response);
-      setSelectedProjectDetail(response);
+      setSelectedProjectDetail(response as any);
     } catch (err: any) {
       console.error('❌ [DEBUG] Error al cargar detalles del proyecto:', err);
       setError('Error al cargar los detalles del proyecto');
@@ -467,11 +464,11 @@ export default function ValidacionHorasAdmin() {
   // Construir diccionario de proyectos {id: {nombre, integrantes}} usando los pendientes
   const projectInfoMap: Record<string, { title: string; integrantes?: any[] }> = {};
   unifiedRows.forEach(row => {
-    const id = row.project_id || row.project || row.id;
+    const id = row.project_id || (row as any).project || row.id;
     if (!id) return;
     projectInfoMap[id] = {
-      title: row.project_title || row.title || row.nombre || row.name || '-',
-      integrantes: row.estudiantes || row.participantes || [],
+      title: row.project_title || (row as any).title || (row as any).nombre || (row as any).name || '-',
+      integrantes: (row as any).estudiantes || (row as any).participantes || [],
     };
   });
 
@@ -485,12 +482,12 @@ export default function ValidacionHorasAdmin() {
     
     const result = {
       id: row.id,
-      project_title: isWorkHour ? row.project_title : (info.title || row.project_title || row.project?.title || row.project || '-'),
+      project_title: isWorkHour ? row.project_title : ((info as any).title || row.project_title || row.project?.title || row.project || '-'),
       company_name: row.company_name || row.empresa_nombre || row.company?.company_name || '-',
       hours: isWorkHour ? row.hours_worked : (row.hours_worked || row.horas || row.project_required_hours || '-'),
       status: isWorkHour ? (row.is_verified ? 'Validado' : 'Pendiente') : (row.status || (row.approved ? 'approved' : 'pending')),
       approved: isWorkHour ? row.is_verified : row.approved,
-      integrantes: info.integrantes || [],
+      integrantes: (info as any).integrantes || [],
       isPending: false,
       // Campos adicionales para horas de trabajo
       student_name: row.student_name,

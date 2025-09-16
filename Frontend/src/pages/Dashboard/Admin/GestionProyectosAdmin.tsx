@@ -669,7 +669,7 @@ const GestionProyectosAdmin = () => {
           </IconButton>
         </span>
       </Tooltip>
-      {(row.status === 'active') && (
+      {(row.status === 'activo') && (
         <Tooltip title="Suspender">
           <span>
             <IconButton
@@ -882,10 +882,8 @@ const GestionProyectosAdmin = () => {
               textShadow: '0 2px 10px rgba(0,0,0,0.2)'
             }}>
               {projects.filter(p => 
-                p.status === 'active' || 
-                p.status === 'published' || 
-                p.status === 'open' || 
-                p.status === 'in-progress'
+                p.status === 'activo' || 
+                p.status === 'publicado'
               ).length}
             </Typography>
             <Typography variant="h6" sx={{ 
@@ -991,7 +989,7 @@ const GestionProyectosAdmin = () => {
               textShadow: '0 2px 10px rgba(0,0,0,0.2)'
             }}>
               {projects.filter(p => 
-                p.status === 'completed'
+                p.status === 'completado'
               ).length}
             </Typography>
             <Typography variant="h6" sx={{ 
@@ -1045,11 +1043,8 @@ const GestionProyectosAdmin = () => {
               textShadow: '0 2px 10px rgba(0,0,0,0.2)'
             }}>
               {projects.filter(p => 
-                p.status === 'deleted' || 
-                p.status === 'cancelled' || 
-                p.status === 'closed' || 
-                p.status === 'terminated' || 
-                p.status === 'suspended'
+                p.status === 'eliminado' || 
+                p.status === 'suspendido'
               ).length}
             </Typography>
             <Typography variant="h6" sx={{ 

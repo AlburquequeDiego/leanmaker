@@ -2,6 +2,27 @@ import { useState, useEffect } from 'react';
 import { useHubAnalytics } from '../../../../hooks/useHubAnalytics';
 import { useTheme } from '../../../../contexts/ThemeContext';
 import { translateNotificationType } from '../../../../utils/notificationTranslations';
+import { apiService } from '../../../../services/api.service';
+
+// Estilos CSS para animaciones
+const globalStyles = `
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+`;
+
+// Inyectar estilos globales
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = globalStyles;
+  document.head.appendChild(styleSheet);
+}
+
 import { 
   powerBIColors, 
   powerBIGradients, 
@@ -161,10 +182,78 @@ const translateProjectStatusToSpanish = (status: string): string => {
 
 export const ReportesYAnalytics = () => {
   const { data, loading, error, refreshData } = useHubAnalytics();
+  const [teachersRankingData, setTeachersRankingData] = useState(null);
+  const [loadingTeachers, setLoadingTeachers] = useState(false);
+  const [collectiveChallengesData, setCollectiveChallengesData] = useState(null);
+  const [loadingCollectiveChallenges, setLoadingCollectiveChallenges] = useState(false);
   const { themeMode } = useTheme();
   
   // Alias para analyticsData para mantener compatibilidad
   const analyticsData = data;
+
+  // Función para obtener datos del ranking de docentes
+  const fetchTeachersRanking = async () => {
+    try {
+      setLoadingTeachers(true);
+      console.log('🔍 [TEACHERS RANKING] Obteniendo datos del ranking de docentes...');
+      
+      const response = await apiService.get('/api/challenges/teachers-ranking/') as {
+        success: boolean;
+        data?: any;
+        error?: string;
+      };
+      
+      console.log('📊 [TEACHERS RANKING] Respuesta recibida:', response);
+      
+      if (response.success && response.data) {
+        setTeachersRankingData(response.data);
+        console.log('✅ [TEACHERS RANKING] Datos cargados exitosamente:', response.data);
+      } else {
+        console.error('❌ [TEACHERS RANKING] Error en la respuesta:', response.error);
+      }
+    } catch (error) {
+      console.error('❌ [TEACHERS RANKING] Error fetching teachers ranking:', error);
+    } finally {
+      setLoadingTeachers(false);
+    }
+  };
+
+  // Función para obtener datos del ranking de desafíos colectivos
+  const fetchCollectiveChallengesRanking = async () => {
+    try {
+      setLoadingCollectiveChallenges(true);
+      console.log('🔍 [COLLECTIVE CHALLENGES] Obteniendo datos del ranking de desafíos colectivos...');
+      
+      const response = await apiService.get('/api/challenges/ranking/') as {
+        success: boolean;
+        data?: any;
+        error?: string;
+      };
+      
+      console.log('📊 [COLLECTIVE CHALLENGES] Respuesta recibida:', response);
+      
+      if (response.success && response.data) {
+        setCollectiveChallengesData(response.data);
+        console.log('✅ [COLLECTIVE CHALLENGES] Datos cargados exitosamente:', response.data);
+      } else {
+        console.error('❌ [COLLECTIVE CHALLENGES] Error en la respuesta:', response.error);
+      }
+    } catch (error) {
+      console.error('❌ [COLLECTIVE CHALLENGES] Error fetching collective challenges ranking:', error);
+    } finally {
+      setLoadingCollectiveChallenges(false);
+    }
+  };
+
+  // Cargar datos del ranking de docentes al montar el componente
+  useEffect(() => {
+    fetchTeachersRanking();
+  }, []);
+
+  // Cargar datos del ranking de desafíos colectivos al montar el componente
+  useEffect(() => {
+    fetchCollectiveChallengesRanking();
+  }, []);
   
   // Usar datos del backend o valores por defecto
   const stats = data?.stats || {
@@ -272,39 +361,89 @@ export const ReportesYAnalytics = () => {
 
   return (
     <Box sx={{ 
-      p: 3, 
+      p: { xs: 2, sm: 3 }, 
       background: themeMode === 'dark' ? '#0f172a' : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', 
       minHeight: '100vh',
-      color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+      color: themeMode === 'dark' ? '#f1f5f9' : 'inherit',
+      overflowX: 'hidden',
+      maxWidth: '100vw',
+      boxSizing: 'border-box'
     }}>
-      {/* Header con gradiente */}
+       {/* Header mejorado con estilo PowerBI */}
       <Card sx={{ 
-        mb: 3, 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
-        borderRadius: 3
-      }}>
-        <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+         mb: 4, 
+         background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%)',
+         boxShadow: '0 12px 40px rgba(30, 58, 138, 0.4)',
+         borderRadius: 4,
+         position: 'relative',
+         overflow: 'hidden',
+         '&::before': {
+           content: '""',
+           position: 'absolute',
+           top: 0,
+           left: 0,
+           right: 0,
+           bottom: 0,
+           background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+           pointerEvents: 'none'
+         }
+       }}>
+         <CardContent sx={{ p: 4, position: 'relative', zIndex: 1 }}>
+           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Box sx={{ 
-                background: 'rgba(255, 255, 255, 0.2)', 
-                borderRadius: 2, 
-                p: 1.5, 
-                mr: 2,
-                backdropFilter: 'blur(10px)'
-              }}>
-                <AnalyticsIcon sx={{ color: 'white', fontSize: 32 }} />
+                 background: 'rgba(255, 255, 255, 0.25)', 
+                 borderRadius: 3, 
+                 p: 2, 
+                 mr: 3,
+                 backdropFilter: 'blur(20px)',
+                 border: '1px solid rgba(255, 255, 255, 0.2)',
+                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+               }}>
+                 <AnalyticsIcon sx={{ color: 'white', fontSize: 40 }} />
               </Box>
               <Box>
-                <Typography variant="h4" sx={{ color: '#ffffff', fontWeight: 'bold', mb: 0.5, textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
-                  Gestión de Analytics y Reportes
+                 <Typography variant="h3" sx={{ 
+                   color: '#ffffff', 
+                   fontWeight: 800, 
+                   mb: 1, 
+                   textShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+                   letterSpacing: '-0.02em'
+                 }}>
+                   📊 Analytics & Reportes Avanzados
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#ffffff', textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}>
-                  Dashboard de métricas globales y estadísticas del sistema LeanMaker
+                 <Typography variant="h6" sx={{ 
+                   color: 'rgba(255, 255, 255, 0.9)', 
+                   textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+                   fontWeight: 400
+                 }}>
+                   Dashboard ejecutivo con métricas en tiempo real del ecosistema LeanMaker
                 </Typography>
               </Box>
             </Box>
+             <Box sx={{ display: 'flex', gap: 2 }}>
+               <Button
+                 variant="contained"
+                 startIcon={<DownloadIcon />}
+                 sx={{
+                   background: 'rgba(255, 255, 255, 0.2)',
+                   backdropFilter: 'blur(20px)',
+                   color: 'white',
+                   border: '1px solid rgba(255, 255, 255, 0.3)',
+                   borderRadius: 2,
+                   px: 3,
+                   py: 1.5,
+                   fontWeight: 600,
+                   '&:hover': {
+                     background: 'rgba(255, 255, 255, 0.3)',
+                     transform: 'translateY(-2px)',
+                     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)'
+                   },
+                   transition: 'all 0.3s ease'
+                 }}
+               >
+                 Exportar Reporte
+               </Button>
             <Button
               variant="contained"
               startIcon={<RefreshIcon />}
@@ -312,176 +451,424 @@ export const ReportesYAnalytics = () => {
               disabled={loading}
               sx={{
                 background: 'rgba(255, 255, 255, 0.2)',
-                backdropFilter: 'blur(10px)',
+                   backdropFilter: 'blur(20px)',
                 color: 'white',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
+                   borderRadius: 2,
+                   px: 3,
+                   py: 1.5,
+                   fontWeight: 600,
                 '&:hover': {
                   background: 'rgba(255, 255, 255, 0.3)',
-                }
+                     transform: 'translateY(-2px)',
+                     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)'
+                   },
+                   transition: 'all 0.3s ease'
               }}
             >
-              Actualizar Datos
+                 {loading ? 'Actualizando...' : 'Actualizar Datos'}
             </Button>
+             </Box>
+           </Box>
+           
+           {/* Indicadores de estado del sistema */}
+           <Box sx={{ 
+             display: 'flex', 
+             gap: 3, 
+             flexWrap: 'wrap',
+             mt: 2
+           }}>
+             <Box sx={{ 
+               display: 'flex', 
+               alignItems: 'center', 
+               gap: 1,
+               px: 2,
+               py: 1,
+               borderRadius: 2,
+               background: 'rgba(255, 255, 255, 0.15)',
+               backdropFilter: 'blur(10px)'
+             }}>
+               <Box sx={{ 
+                 width: 8, 
+                 height: 8, 
+                 borderRadius: '50%', 
+                 bgcolor: '#10b981',
+                 animation: 'pulse 2s infinite'
+               }} />
+               <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                 Sistema Operativo
+               </Typography>
+             </Box>
+             <Box sx={{ 
+               display: 'flex', 
+               alignItems: 'center', 
+               gap: 1,
+               px: 2,
+               py: 1,
+               borderRadius: 2,
+               background: 'rgba(255, 255, 255, 0.15)',
+               backdropFilter: 'blur(10px)'
+             }}>
+               <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                 Última actualización: {new Date().toLocaleTimeString()}
+               </Typography>
+             </Box>
+             <Box sx={{ 
+               display: 'flex', 
+               alignItems: 'center', 
+               gap: 1,
+               px: 2,
+               py: 1,
+               borderRadius: 2,
+               background: 'rgba(255, 255, 255, 0.15)',
+               backdropFilter: 'blur(10px)'
+             }}>
+               <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                 Datos en tiempo real
+               </Typography>
+             </Box>
           </Box>
         </CardContent>
       </Card>
 
-      {/* KPI Cards Superiores - Diseño Mejorado */}
-      <Box sx={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-        gap: 2.5, 
-        mb: 4 
-      }}>
+       {/* KPI Cards Superiores - Diseño PowerBI Mejorado */}
+       <Box sx={{ 
+         display: 'grid', 
+         gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, 
+         gap: 3, 
+         mb: 5,
+         width: '100%',
+         boxSizing: 'border-box'
+       }}>
+         {/* Usuarios Totales */}
         <Card sx={{ 
-          borderRadius: 3, 
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)', 
-          bgcolor: '#22c55e', 
+           borderRadius: 4, 
+           boxShadow: '0 8px 32px rgba(34, 197, 94, 0.2)', 
+           background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
           color: 'white',
-          transition: 'all 0.3s ease',
+           transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+           position: 'relative',
+           overflow: 'hidden',
           '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-          }
-        }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+             transform: 'translateY(-8px) scale(1.02)',
+             boxShadow: '0 16px 48px rgba(34, 197, 94, 0.3)'
+           },
+           '&::before': {
+             content: '""',
+             position: 'absolute',
+             top: '-50%',
+             right: '-50%',
+             width: '100%',
+             height: '100%',
+             background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+             animation: 'float 6s ease-in-out infinite'
+           }
+         }}>
+           <CardContent sx={{ p: 4, position: 'relative', zIndex: 1 }}>
+             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#ffffff' }}>
+                 <Typography variant="h2" sx={{ 
+                   fontWeight: 900, 
+                   mb: 1, 
+                   color: '#ffffff',
+                   fontSize: '3rem',
+                   textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                 }}>
                   {stats.totalUsers.toLocaleString()}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#ffffff' }}>
-                  Usuarios Registrados
+                 <Typography variant="h5" sx={{ 
+                   fontWeight: 700, 
+                   mb: 1, 
+                   color: '#ffffff',
+                   textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                 }}>
+                   👥 Usuarios Totales
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9, color: '#ffffff' }}>
+                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                   <TrendingUpIcon sx={{ fontSize: 16 }} />
+                   <Typography variant="body2" sx={{ 
+                     opacity: 0.95, 
+                     color: '#ffffff',
+                     fontWeight: 500
+                   }}>
                   +12% este mes
                 </Typography>
+                 </Box>
               </Box>
               <Box sx={{ 
-                p: 2, 
-                borderRadius: 2, 
-                bgcolor: 'rgba(255,255,255,0.2)',
+                 p: 3, 
+                 borderRadius: 3, 
+                 bgcolor: 'rgba(255,255,255,0.25)',
+                 backdropFilter: 'blur(20px)',
+                 border: '1px solid rgba(255,255,255,0.2)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                 justifyContent: 'center',
+                 boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
               }}>
-                <PeopleIcon sx={{ fontSize: 32 }} />
+                 <PeopleIcon sx={{ fontSize: 40 }} />
               </Box>
             </Box>
+             <Box sx={{ 
+               mt: 2,
+               p: 2,
+               borderRadius: 2,
+               bgcolor: 'rgba(255,255,255,0.15)',
+               backdropFilter: 'blur(10px)'
+             }}>
+               <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                 📈 Crecimiento sostenido del ecosistema
+               </Typography>
+             </Box>
           </CardContent>
         </Card>
 
+         {/* Proyectos Activos */}
         <Card sx={{ 
-          borderRadius: 3, 
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)', 
-          bgcolor: '#3b82f6', 
+           borderRadius: 4, 
+           boxShadow: '0 8px 32px rgba(59, 130, 246, 0.2)', 
+           background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           color: 'white',
-          transition: 'all 0.3s ease',
+           transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+           position: 'relative',
+           overflow: 'hidden',
           '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-          }
-        }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+             transform: 'translateY(-8px) scale(1.02)',
+             boxShadow: '0 16px 48px rgba(59, 130, 246, 0.3)'
+           },
+           '&::before': {
+             content: '""',
+             position: 'absolute',
+             top: '-50%',
+             right: '-50%',
+             width: '100%',
+             height: '100%',
+             background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+             animation: 'float 6s ease-in-out infinite'
+           }
+         }}>
+           <CardContent sx={{ p: 4, position: 'relative', zIndex: 1 }}>
+             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#ffffff' }}>
+                 <Typography variant="h2" sx={{ 
+                   fontWeight: 900, 
+                   mb: 1, 
+                   color: '#ffffff',
+                   fontSize: '3rem',
+                   textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                 }}>
                   {stats.totalProjects.toLocaleString()}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#ffffff' }}>
-                  Proyectos Activos
+                 <Typography variant="h5" sx={{ 
+                   fontWeight: 700, 
+                   mb: 1, 
+                   color: '#ffffff',
+                   textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                 }}>
+                   🚀 Proyectos Totales
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9, color: '#ffffff' }}>
-                  {stats.activeProjects} en curso
+                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                   <CheckCircleIcon sx={{ fontSize: 16 }} />
+                   <Typography variant="body2" sx={{ 
+                     opacity: 0.95, 
+                     color: '#ffffff',
+                     fontWeight: 500
+                   }}>
+                     {stats.activeProjects} activos
                 </Typography>
+                 </Box>
               </Box>
               <Box sx={{ 
-                p: 2, 
-                borderRadius: 2, 
-                bgcolor: 'rgba(255,255,255,0.2)',
+                 p: 3, 
+                 borderRadius: 3, 
+                 bgcolor: 'rgba(255,255,255,0.25)',
+                 backdropFilter: 'blur(20px)',
+                 border: '1px solid rgba(255,255,255,0.2)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                 justifyContent: 'center',
+                 boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
               }}>
-                <WorkIcon sx={{ fontSize: 32 }} />
+                 <WorkIcon sx={{ fontSize: 40 }} />
               </Box>
             </Box>
+             <Box sx={{ 
+               mt: 2,
+               p: 2,
+               borderRadius: 2,
+               bgcolor: 'rgba(255,255,255,0.15)',
+               backdropFilter: 'blur(10px)'
+             }}>
+               <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                 💼 Innovación en progreso
+               </Typography>
+             </Box>
           </CardContent>
         </Card>
 
+         {/* Empresas Colaboradoras */}
         <Card sx={{ 
-          borderRadius: 3, 
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)', 
-          bgcolor: '#f59e0b', 
+           borderRadius: 4, 
+           boxShadow: '0 8px 32px rgba(245, 158, 11, 0.2)', 
+           background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
           color: 'white',
-          transition: 'all 0.3s ease',
+           transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+           position: 'relative',
+           overflow: 'hidden',
           '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-          }
-        }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+             transform: 'translateY(-8px) scale(1.02)',
+             boxShadow: '0 16px 48px rgba(245, 158, 11, 0.3)'
+           },
+           '&::before': {
+             content: '""',
+             position: 'absolute',
+             top: '-50%',
+             right: '-50%',
+             width: '100%',
+             height: '100%',
+             background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+             animation: 'float 6s ease-in-out infinite'
+           }
+         }}>
+           <CardContent sx={{ p: 4, position: 'relative', zIndex: 1 }}>
+             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#ffffff' }}>
+                 <Typography variant="h2" sx={{ 
+                   fontWeight: 900, 
+                   mb: 1, 
+                   color: '#ffffff',
+                   fontSize: '3rem',
+                   textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                 }}>
                   {stats.totalCompanies.toLocaleString()}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#ffffff' }}>
-                  Empresas Colaboradoras
+                 <Typography variant="h5" sx={{ 
+                   fontWeight: 700, 
+                   mb: 1, 
+                   color: '#ffffff',
+                   textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                 }}>
+                   🏢 Empresas Activas
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9, color: '#ffffff' }}>
+                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                   <BusinessIcon sx={{ fontSize: 16 }} />
+                   <Typography variant="body2" sx={{ 
+                     opacity: 0.95, 
+                     color: '#ffffff',
+                     fontWeight: 500
+                   }}>
                   {stats.totalStudents} estudiantes
                 </Typography>
+                 </Box>
               </Box>
               <Box sx={{ 
-                p: 2, 
-                borderRadius: 2, 
-                bgcolor: 'rgba(255,255,255,0.2)',
+                 p: 3, 
+                 borderRadius: 3, 
+                 bgcolor: 'rgba(255,255,255,0.25)',
+                 backdropFilter: 'blur(20px)',
+                 border: '1px solid rgba(255,255,255,0.2)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                 justifyContent: 'center',
+                 boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
               }}>
-                <BusinessIcon sx={{ fontSize: 32 }} />
+                 <BusinessIcon sx={{ fontSize: 40 }} />
               </Box>
             </Box>
+             <Box sx={{ 
+               mt: 2,
+               p: 2,
+               borderRadius: 2,
+               bgcolor: 'rgba(255,255,255,0.15)',
+               backdropFilter: 'blur(10px)'
+             }}>
+               <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                 🤝 Colaboración empresarial
+               </Typography>
+             </Box>
           </CardContent>
         </Card>
 
+         {/* Estudiantes Activos */}
         <Card sx={{ 
-          borderRadius: 3, 
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)', 
-          bgcolor: '#8b5cf6', 
+           borderRadius: 4, 
+           boxShadow: '0 8px 32px rgba(139, 92, 246, 0.2)', 
+           background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
           color: 'white',
-          transition: 'all 0.3s ease',
+           transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+           position: 'relative',
+           overflow: 'hidden',
           '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-          }
-        }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+             transform: 'translateY(-8px) scale(1.02)',
+             boxShadow: '0 16px 48px rgba(139, 92, 246, 0.3)'
+           },
+           '&::before': {
+             content: '""',
+             position: 'absolute',
+             top: '-50%',
+             right: '-50%',
+             width: '100%',
+             height: '100%',
+             background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+             animation: 'float 6s ease-in-out infinite'
+           }
+         }}>
+           <CardContent sx={{ p: 4, position: 'relative', zIndex: 1 }}>
+             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#ffffff' }}>
+                 <Typography variant="h2" sx={{ 
+                   fontWeight: 900, 
+                   mb: 1, 
+                   color: '#ffffff',
+                   fontSize: '3rem',
+                   textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                 }}>
                   {stats.totalStudents.toLocaleString()}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#ffffff' }}>
-                  Estudiantes Activos
+                 <Typography variant="h5" sx={{ 
+                   fontWeight: 700, 
+                   mb: 1, 
+                   color: '#ffffff',
+                   textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                 }}>
+                   🎓 Estudiantes Activos
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9, color: '#ffffff' }}>
+                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                   <SchoolIcon sx={{ fontSize: 16 }} />
+                   <Typography variant="body2" sx={{ 
+                     opacity: 0.95, 
+                     color: '#ffffff',
+                     fontWeight: 500
+                   }}>
                   Participando en proyectos
                 </Typography>
+                 </Box>
               </Box>
               <Box sx={{ 
-                p: 2, 
-                borderRadius: 2, 
-                bgcolor: 'rgba(255,255,255,0.2)',
+                 p: 3, 
+                 borderRadius: 3, 
+                 bgcolor: 'rgba(255,255,255,0.25)',
+                 backdropFilter: 'blur(20px)',
+                 border: '1px solid rgba(255,255,255,0.2)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                 justifyContent: 'center',
+                 boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
               }}>
-                <SchoolIcon sx={{ fontSize: 32 }} />
+                 <SchoolIcon sx={{ fontSize: 40 }} />
               </Box>
             </Box>
+             <Box sx={{ 
+               mt: 2,
+               p: 2,
+               borderRadius: 2,
+               bgcolor: 'rgba(255,255,255,0.15)',
+               backdropFilter: 'blur(10px)'
+             }}>
+               <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+                 🌟 Talento en desarrollo
+               </Typography>
+             </Box>
           </CardContent>
         </Card>
 
@@ -489,7 +876,17 @@ export const ReportesYAnalytics = () => {
       </Box>
 
       {/* Gráficos y Tablas */}
-      <Box sx={{ display: 'flex', gap: 4, mb: 10, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+       <Box sx={{ 
+         display: 'flex', 
+         flexDirection: { xs: 'column', lg: 'row' },
+         gap: 4, 
+         mb: 10, 
+         flexWrap: 'wrap', 
+         alignItems: 'flex-start',
+         width: '100%',
+         boxSizing: 'border-box',
+         overflowX: 'hidden'
+       }}>
         {/* Gráfico de Actividad Semanal */}
         <Box sx={{ flex: '2 1 600px', minWidth: 400 }}>
           <Card sx={{ 
@@ -978,7 +1375,15 @@ export const ReportesYAnalytics = () => {
       </Box>
 
        {/* Tablas de Top 20 */}
-       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mt: 6 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 4, 
+          mt: 6,
+          width: '100%',
+          boxSizing: 'border-box',
+          overflowX: 'hidden'
+        }}>
          {/* Top 20 Estudiantes */}
         <Box sx={{ width: '100%' }}>
            <Card sx={{ 
@@ -1166,6 +1571,141 @@ export const ReportesYAnalytics = () => {
              </CardContent>
            </Card>
          </Box>
+
+         {/* Top 20 Docentes */}
+         <Box sx={{ width: '100%' }}>
+           <Card sx={{ 
+             borderRadius: 3, 
+             boxShadow: 3,
+             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+             color: themeMode === 'dark' ? '#f1f5f9' : 'inherit'
+           }}>
+             <CardContent>
+               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                 <Typography variant="h6" sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit' }}>Top 20 Docentes</Typography>
+                 <Typography variant="body2" sx={{ color: themeMode === 'dark' ? '#cbd5e1' : 'text.secondary' }}>Por actividad y proyectos supervisados</Typography>
+               </Box>
+               {loadingTeachers ? (
+                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+                   <CircularProgress />
+                 </Box>
+               ) : teachersRankingData?.top_teachers?.length > 0 ? (
+                 <TableContainer>
+                   <Table>
+                     <TableHead>
+                       <TableRow>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Docente</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Estudiantes Supervisados</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Proyectos</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Evaluaciones</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Puntuación Promedio</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Tasa de Éxito</TableCell>
+                       </TableRow>
+                     </TableHead>
+                     <TableBody>
+                       {teachersRankingData.top_teachers.map((teacher, index) => (
+                         <TableRow 
+                           key={teacher.teacher_id} 
+                           sx={index === 0 ? { 
+                             bgcolor: themeMode === 'dark' ? '#334155' : '#fef3c7', 
+                             '&:hover': { bgcolor: themeMode === 'dark' ? '#475569' : '#fde68a' } 
+                           } : {
+                             '&:hover': { 
+                               bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' 
+                             }
+                           }}
+                         >
+                           <TableCell>
+                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                               <Avatar 
+                                 sx={{ 
+                                   width: 40, 
+                                   height: 40,
+                                   background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                   boxShadow: '0 4px 12px rgba(249, 115, 22, 0.3)'
+                                 }}
+                               >
+                                 {teacher.teacher_name?.split(' ').map(n => n[0]).join('') || 'D'}
+                               </Avatar>
+                               <Box>
+                                 <Typography variant="body2" fontWeight="bold" sx={{ 
+                                   color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                                 }}>
+                                   {teacher.teacher_name}
+                                 </Typography>
+                                 <Typography variant="caption" sx={{ 
+                                   color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+                                 }}>
+                                   {teacher.teacher_email}
+                                 </Typography>
+                               </Box>
+                             </Box>
+                           </TableCell>
+                           <TableCell>
+                               <Typography variant="body2" fontWeight="bold" sx={{ 
+                                 color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                               }}>
+                               {teacher.total_students_supervised}
+                               </Typography>
+                               <Typography variant="caption" sx={{ 
+                                 color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+                               }}>
+                               {teacher.active_students} activos
+                               </Typography>
+                           </TableCell>
+                           <TableCell>
+                               <Typography variant="body2" fontWeight="bold" sx={{ 
+                                 color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                               }}>
+                               {teacher.total_projects_supervised}
+                               </Typography>
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" fontWeight="bold" sx={{ 
+                               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                             }}>
+                               {teacher.total_evaluations}
+                               </Typography>
+                           </TableCell>
+                           <TableCell>
+                               <Typography variant="body2" fontWeight="bold" sx={{ 
+                                 color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                               }}>
+                               {teacher.avg_evaluation_score}/5
+                               </Typography>
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" fontWeight="bold" sx={{ 
+                               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                             }}>
+                               {teacher.success_rate}%
+                               </Typography>
+                           </TableCell>
+                         </TableRow>
+                       ))}
+                     </TableBody>
+                   </Table>
+                 </TableContainer>
+               ) : (
+                 <Box sx={{ 
+                   display: 'flex', 
+                   justifyContent: 'center', 
+                   alignItems: 'center', 
+                   height: 200,
+                   border: '1px dashed',
+                   borderColor: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                   borderRadius: 2
+                 }}>
+                   <Typography variant="h6" sx={{ 
+                     color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+                   }}>
+                     📊 No hay datos de docentes disponibles
+                   </Typography>
+                 </Box>
+               )}
+             </CardContent>
+           </Card>
+         </Box>
        </Box>
 
         {/* Sección: Métricas de Aplicaciones */}
@@ -1194,7 +1734,7 @@ export const ReportesYAnalytics = () => {
             </Typography>
           </Box>
           
-          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
+          <Card sx={powerBICardStyles}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de Aplicaciones - Diseño Power BI Modern */}
               <Box sx={{ 
@@ -1330,7 +1870,7 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="aplicaciones" 
                         fill="url(#totalAppsGradient)" 
-                        radius={powerBIGraphConfig.bar.radius}
+                        radius={powerBIGraphConfig.bar.radius as [number, number, number, number]}
                         stroke="#3b82f6"
                         strokeWidth={powerBIGraphConfig.bar.strokeWidth}
                         filter={powerBIGraphConfig.bar.filter}
@@ -1338,7 +1878,7 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="aceptadas" 
                         fill="url(#acceptedAppsGradient)" 
-                        radius={powerBIGraphConfig.bar.radius}
+                        radius={powerBIGraphConfig.bar.radius as [number, number, number, number]}
                         stroke="#22c55e"
                         strokeWidth={powerBIGraphConfig.bar.strokeWidth}
                         filter={powerBIGraphConfig.bar.filter}
@@ -1468,7 +2008,7 @@ export const ReportesYAnalytics = () => {
             </Typography>
           </Box>
           
-          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
+          <Card sx={powerBICardStyles}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de Strikes - Diseño Mejorado */}
               <Box sx={{ 
@@ -1480,7 +2020,7 @@ export const ReportesYAnalytics = () => {
                 <Box sx={{ 
                   p: 3, 
                   borderRadius: '16px',
-                  background: powerBIGradients.danger,
+                  background: powerBIGradients.error,
                   textAlign: 'center',
                   boxShadow: '0 8px 32px rgba(239, 68, 68, 0.3)',
                   transition: 'all 0.3s ease',
@@ -1690,7 +2230,7 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="cantidad" 
                         fill="url(#activeStrikesGradient)" 
-                        radius={powerBIGraphConfig.bar.radius}
+                        radius={powerBIGraphConfig.bar.radius as [number, number, number, number]}
                         stroke="#ef4444"
                         strokeWidth={powerBIGraphConfig.bar.strokeWidth}
                         filter={powerBIGraphConfig.bar.filter}
@@ -1729,7 +2269,7 @@ export const ReportesYAnalytics = () => {
             </Typography>
           </Box>
           
-          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
+          <Card sx={powerBICardStyles}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de Notificaciones - Diseño Mejorado */}
               <Box sx={{ 
@@ -1976,7 +2516,7 @@ export const ReportesYAnalytics = () => {
             </Typography>
           </Box>
           
-          <Card sx={themeMode === 'dark' ? powerBICardStyles.dark : powerBICardStyles.light}>
+          <Card sx={powerBICardStyles}>
             <CardContent sx={{ p: 4 }}>
               {/* KPI Cards de API - Diseño Mejorado */}
               <Box sx={{ 
@@ -2115,7 +2655,7 @@ export const ReportesYAnalytics = () => {
                       <Bar 
                         dataKey="solicitudes" 
                         fill="url(#totalApiGradient)" 
-                        radius={powerBIGraphConfig.bar.radius}
+                        radius={powerBIGraphConfig.bar.radius as [number, number, number, number]}
                         stroke="#3b82f6"
                         strokeWidth={powerBIGraphConfig.bar.strokeWidth}
                         filter={powerBIGraphConfig.bar.filter}
@@ -2406,8 +2946,8 @@ export const ReportesYAnalytics = () => {
           fontSize: '1.1rem',
           fontWeight: 500,
           textAlign: 'center'
-        }}>
-          📊 No hay proyectos con nivel TRL asignado
+          }}>
+            📊 No hay proyectos con nivel TRL asignado
           <br />
           <Typography variant="body2" sx={{
             color: themeMode === 'dark' ? '#94a3b8' : '#64748b',
@@ -3127,7 +3667,7 @@ export const ReportesYAnalytics = () => {
 
                 {/* Gráfico de Comparación de Costos */}
                 {(() => {
-                  const costData = analyticsData?.financialMetrics?.costComparisonByArea || [];
+                  const costData = (analyticsData?.financialMetrics as any)?.costComparisonByArea || [];
                   const hasRealData = costData.some(item => item.totalHoursAvailable > 0);
                   
                   // Si no hay datos reales, no mostrar el gráfico
@@ -3209,6 +3749,264 @@ export const ReportesYAnalytics = () => {
                   );
                 })()}
               </Box>
+            </CardContent>
+          </Card>
+        </Box>
+
+         {/* ===== NUEVA SECCIÓN: RANKING DE DESAFÍOS COLECTIVOS ===== */}
+         <Box sx={{ mb: 4 }}>
+           {/* Estadísticas Generales de Desafíos Colectivos */}
+           <Card sx={{ 
+             borderRadius: 4, 
+             boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+             border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+             mb: 4
+           }}>
+             <CardContent sx={{ p: 4 }}>
+               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                 <Typography variant="h4" sx={{ 
+                   color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                   fontWeight: 800,
+                   display: 'flex',
+                   alignItems: 'center',
+                   gap: 2
+                 }}>
+                   🏆 Ranking de Desafíos Colectivos
+                 </Typography>
+                 <Button
+                   variant="contained"
+                   startIcon={<RefreshIcon />}
+                   onClick={fetchCollectiveChallengesRanking}
+                   disabled={loadingCollectiveChallenges}
+                   sx={{
+                     borderRadius: 2,
+                     px: 3,
+                     py: 1.5,
+                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                     '&:hover': {
+                       background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+                     }
+                   }}
+                 >
+                   Actualizar Rankings
+                 </Button>
+               </Box>
+               
+               {/* Tarjetas de estadísticas generales */}
+               <Box sx={{ 
+                 display: 'grid', 
+                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                 gap: 3, 
+                 mb: 4 
+               }}>
+                 <Card sx={{ 
+                   borderRadius: 3, 
+                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                   color: 'white',
+                   boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)'
+                 }}>
+                   <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                     <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>
+                       {collectiveChallengesData?.general_stats?.total_challenges || 0}
+                     </Typography>
+                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                       🎯 Desafíos Totales
+                     </Typography>
+                   </CardContent>
+                 </Card>
+                 
+                 <Card sx={{ 
+                   borderRadius: 3, 
+                   background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                   color: 'white',
+                   boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)'
+                 }}>
+                   <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                     <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>
+                       {collectiveChallengesData?.general_stats?.active_challenges || 0}
+                     </Typography>
+                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                       ⚡ Desafíos Activos
+                     </Typography>
+                   </CardContent>
+                 </Card>
+                 
+                 <Card sx={{ 
+                   borderRadius: 3, 
+                   background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                   color: 'white',
+                   boxShadow: '0 4px 20px rgba(139, 92, 246, 0.3)'
+                 }}>
+                   <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                     <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>
+                       {collectiveChallengesData?.general_stats?.total_applications || 0}
+                     </Typography>
+                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                       📝 Aplicaciones
+                     </Typography>
+                   </CardContent>
+                 </Card>
+                 
+                 <Card sx={{ 
+                   borderRadius: 3, 
+                   background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                   color: 'white',
+                   boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)'
+                 }}>
+                   <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                     <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>
+                       {collectiveChallengesData?.general_stats?.completion_rate || 0}%
+                     </Typography>
+                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                       ✅ Tasa de Completación
+                     </Typography>
+                   </CardContent>
+                 </Card>
+               </Box>
+             </CardContent>
+           </Card>
+
+           {/* Top 20 Equipos */}
+           <Card sx={{ 
+             borderRadius: 4, 
+             boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+             bgcolor: themeMode === 'dark' ? '#1e293b' : '#ffffff',
+             border: themeMode === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
+             mb: 4
+           }}>
+             <CardContent sx={{ p: 4 }}>
+               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                 <Typography variant="h5" sx={{ 
+                   color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+                   fontWeight: 700,
+                   display: 'flex',
+                   alignItems: 'center',
+                   gap: 2
+                 }}>
+                   🏅 Top 20 Equipos
+                 </Typography>
+                 <Typography variant="body2" sx={{ 
+                   color: themeMode === 'dark' ? '#cbd5e1' : '#64748b',
+                   fontWeight: 500
+                 }}>
+                   Por rendimiento y completación
+                 </Typography>
+               </Box>
+               
+               {loadingCollectiveChallenges ? (
+                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+                   <CircularProgress />
+                 </Box>
+               ) : collectiveChallengesData?.top_teams?.length > 0 ? (
+                 <TableContainer>
+                   <Table>
+                     <TableHead>
+                       <TableRow>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Equipo</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Desafíos Totales</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Completados</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Progreso Promedio</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Tasa de Completación</TableCell>
+                         <TableCell sx={{ color: themeMode === 'dark' ? '#f1f5f9' : 'inherit', fontWeight: 600 }}>Puntuación</TableCell>
+                       </TableRow>
+                     </TableHead>
+                     <TableBody>
+                       {collectiveChallengesData.top_teams.map((team, index) => (
+                         <TableRow 
+                           key={team.team_id} 
+                           sx={index === 0 ? { 
+                             bgcolor: themeMode === 'dark' ? '#334155' : '#fef3c7',
+                             '&:hover': { bgcolor: themeMode === 'dark' ? '#475569' : '#fde68a' } 
+                           } : {
+                             '&:hover': { 
+                               bgcolor: themeMode === 'dark' ? '#334155' : '#f8fafc' 
+                             }
+                           }}
+                         >
+                           <TableCell>
+                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                               <Avatar 
+                                 sx={{ 
+                                   width: 40, 
+                                   height: 40,
+                                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                   boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+                                 }}
+                               >
+                                 {team.team_name?.split(' ').map(n => n[0]).join('') || 'E'}
+                               </Avatar>
+                               <Box>
+                                 <Typography variant="body2" fontWeight="bold" sx={{ 
+                                   color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                                 }}>
+                                   {team.team_name}
+                                 </Typography>
+                                 <Typography variant="caption" sx={{ 
+                                   color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+                                 }}>
+                                   {team.total_members} miembros
+                                 </Typography>
+                               </Box>
+                             </Box>
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" fontWeight="bold" sx={{ 
+                               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                             }}>
+                               {team.total_challenges}
+                             </Typography>
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" fontWeight="bold" sx={{ 
+                               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                             }}>
+                               {team.completed_challenges}
+                             </Typography>
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" fontWeight="bold" sx={{ 
+                               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                             }}>
+                               {team.avg_progress}%
+                             </Typography>
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" fontWeight="bold" sx={{ 
+                               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                             }}>
+                               {team.completion_rate}%
+                             </Typography>
+                           </TableCell>
+                           <TableCell>
+                             <Typography variant="body2" fontWeight="bold" sx={{ 
+                               color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b' 
+                             }}>
+                               {team.performance_score}
+                             </Typography>
+                           </TableCell>
+                         </TableRow>
+                       ))}
+                     </TableBody>
+                   </Table>
+                 </TableContainer>
+               ) : (
+                 <Box sx={{ 
+                   display: 'flex', 
+                   justifyContent: 'center', 
+                   alignItems: 'center', 
+                   height: 200,
+                   border: '1px dashed',
+                   borderColor: themeMode === 'dark' ? '#334155' : '#e2e8f0',
+                   borderRadius: 2
+                 }}>
+                   <Typography variant="h6" sx={{ 
+                     color: themeMode === 'dark' ? '#cbd5e1' : '#64748b' 
+                   }}>
+                     📊 No hay datos de equipos disponibles
+                   </Typography>
+                 </Box>
+               )}
             </CardContent>
           </Card>
         </Box>

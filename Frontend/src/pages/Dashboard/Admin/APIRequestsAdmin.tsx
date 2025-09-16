@@ -183,8 +183,11 @@ export default function APIRequestsAdmin() {
       background: themeMode === 'dark' 
         ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' 
         : 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      p: 3,
-      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b'
+      p: { xs: 2, sm: 3 },
+      color: themeMode === 'dark' ? '#f1f5f9' : '#1e293b',
+      overflowX: 'hidden',
+      maxWidth: '100vw',
+      boxSizing: 'border-box'
     }}>
       {/* Header Principal */}
       <Card sx={{ 

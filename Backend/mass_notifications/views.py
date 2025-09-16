@@ -60,6 +60,7 @@ def notification_list(request):
             # Mapear target_audience del backend al frontend
             target_all_students = notification.target_audience in ['students', 'all']
             target_all_companies = notification.target_audience in ['companies', 'all']
+            target_all_teachers = notification.target_audience in ['teachers', 'all']
             
             # Calcular número de destinatarios reales
             total_recipients = 0
@@ -69,6 +70,8 @@ def notification_list(request):
                 total_recipients = Estudiante.objects.filter(user__is_active=True).count()
             elif notification.target_audience == 'companies':
                 total_recipients = Empresa.objects.filter(user__is_active=True).count()
+            elif notification.target_audience == 'teachers':
+                total_recipients = User.objects.filter(is_active=True, role='teacher').count()
             
             # Calcular números de envío
             sent_count = total_recipients if notification.is_sent else 0
@@ -84,8 +87,10 @@ def notification_list(request):
                 'status': 'sent' if notification.is_sent else 'draft',
                 'target_all_students': target_all_students,
                 'target_all_companies': target_all_companies,
+                'target_all_teachers': target_all_teachers,
                 'target_students': [],
                 'target_companies': [],
+                'target_teachers': [],
                 'scheduled_at': notification.scheduled_at.isoformat() if notification.scheduled_at else None,
                 'sent_at': notification.sent_at.isoformat() if notification.sent_at else None,
                 'created_at': notification.created_at.isoformat(),
@@ -132,11 +137,19 @@ def notification_create(request):
         
         # Mapear target_audience del frontend al backend
         target_audience = 'all'
-        if data.get('target_all_students') and not data.get('target_all_companies'):
+        if data.get('target_all_students') and not data.get('target_all_companies') and not data.get('target_all_teachers'):
             target_audience = 'students'
-        elif data.get('target_all_companies') and not data.get('target_all_students'):
+        elif data.get('target_all_companies') and not data.get('target_all_students') and not data.get('target_all_teachers'):
             target_audience = 'companies'
+        elif data.get('target_all_teachers') and not data.get('target_all_students') and not data.get('target_all_companies'):
+            target_audience = 'teachers'
+        elif data.get('target_all_students') and data.get('target_all_companies') and data.get('target_all_teachers'):
+            target_audience = 'all'
         elif data.get('target_all_students') and data.get('target_all_companies'):
+            target_audience = 'all'
+        elif data.get('target_all_students') and data.get('target_all_teachers'):
+            target_audience = 'all'
+        elif data.get('target_all_companies') and data.get('target_all_teachers'):
             target_audience = 'all'
         
         notification = MassNotification.objects.create(
@@ -237,6 +250,8 @@ def notification_send(request, pk):
             recipients = User.objects.filter(is_active=True, role='student')
         elif notification.target_audience == 'companies':
             recipients = User.objects.filter(is_active=True, role='company')
+        elif notification.target_audience == 'teachers':
+            recipients = User.objects.filter(is_active=True, role='teacher')
         
         # Crear notificaciones individuales para cada destinatario
         notifications_created = 0

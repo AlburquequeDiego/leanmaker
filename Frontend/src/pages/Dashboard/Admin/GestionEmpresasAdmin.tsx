@@ -265,13 +265,13 @@ export const GestionEmpresasAdmin = () => {
       // ✅ VISTA PRINCIPAL LIMPIA
       const response = await apiService.get(`/api/companies/admin/companies-simple/?${params.toString()}`);
       console.log('📊 [DEBUG] Response completa recibida:', response);
-      console.log('📊 [DEBUG] Response.results:', response?.results);
-      console.log('📊 [DEBUG] Response.companies:', response?.companies);
+      console.log('📊 [DEBUG] Response.results:', (response as any)?.results);
+      console.log('📊 [DEBUG] Response.companies:', (response as any)?.companies);
       console.log('📊 [DEBUG] Response tipo:', typeof response);
       console.log('📊 [DEBUG] Response keys:', response ? Object.keys(response) : 'undefined');
       
       // 🔍 DEBUG SIMPLIFICADO: Solo verificar rating
-      const companiesData = response?.results || [];
+      const companiesData = (response as any)?.results || [];
       if (companiesData && companiesData.length > 0) {
         const primeraEmpresa = companiesData[0];
         console.log('🔍 [DEBUG] Primera empresa recibida del backend:');
@@ -348,7 +348,7 @@ export const GestionEmpresasAdmin = () => {
       
       console.log('🔄 [fetchData] Actualizando estado con empresas:', mappedCompanies.length);
       setCompanies(mappedCompanies);
-      setTotalCount(response.count || 0);
+      setTotalCount((response as any).count || 0);
       console.log('🔄 [fetchData] Estado actualizado correctamente');
     } catch (error) {
       console.error('❌ [fetchData] Error fetching data:', error);
@@ -1181,8 +1181,8 @@ export const GestionEmpresasAdmin = () => {
             onPageSizeChange={handlePageSizeChange}
             totalCount={totalCount}
             currentPage={currentPage}
-            pageSize={pageSize}
-            pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
+            pageSize={typeof pageSize === 'number' ? pageSize : 1000000}
+            pageSizeOptions={[20, 50, 100, 150, 200]}
             showPagination={false}
             showPageSizeSelector={false}
           />

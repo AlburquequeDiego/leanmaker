@@ -26,6 +26,7 @@ class MassNotification(models.Model):
         ('all', 'Todos los usuarios'),
         ('students', 'Solo estudiantes'),
         ('companies', 'Solo empresas'),
+        ('teachers', 'Solo docentes'),
         ('admins', 'Solo administradores'),
     ]
     

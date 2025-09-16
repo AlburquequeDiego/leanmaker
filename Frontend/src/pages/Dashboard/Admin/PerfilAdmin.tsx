@@ -249,7 +249,7 @@ export default function PerfilAdmin() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const userData = await apiService.get('/api/users/profile/');
+      const userData = await apiService.get('/api/users/profile/') as any;
       setProfile(userData);
       setFormData({
         first_name: userData.first_name || '',

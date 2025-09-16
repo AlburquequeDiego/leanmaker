@@ -55,6 +55,21 @@ export interface HubAnalyticsData {
     realHoursOffered: number;
     status: string;
   }>;
+  topTeachers: Array<{
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+    email: string;
+    avatar: string;
+    projects_supervised: number;
+    students_assigned: number;
+    total_hours: number;
+    is_active: boolean;
+    is_verified: boolean;
+    date_joined: string;
+    last_login?: string;
+  }>;
   recentActivity: Array<{
     id: string;
     user: string;
@@ -142,6 +157,11 @@ export interface HubAnalyticsData {
       percentage: number;
     }>;
     totalRatedProjects: number;
+    satisfactionByArea: Array<{
+      area: string;
+      satisfaction: number;
+      totalProjects: number;
+    }>;
   };
   efficiencyMetrics: {
     averageCompletionTime: number;
@@ -154,6 +174,13 @@ export interface HubAnalyticsData {
       status: string;
       count: number;
       success_rate: number;
+    }>;
+    efficiencyByArea: Array<{
+      area: string;
+      averageEfficiency: number;
+      successRate: number;
+      totalProjects: number;
+      color: string;
     }>;
   };
   financialMetrics: {

@@ -63,7 +63,7 @@ interface Student {
   company_name?: string;
   status: 'active' | 'inactive' | 'suspended' | 'blocked' | 'rejected' | 'approved' | 'pending';
   strikes: number;
-  gpa: number;
+  gpa?: number;
   created_at: string;
   last_activity: string;
   // Campos adicionales del backend
@@ -72,7 +72,6 @@ interface Student {
   graduation_year?: number;
   completed_projects?: number;
   experience_years?: number;
-  gpa?: number;
   skills?: string[];
   languages?: string[];
   user_data?: {
@@ -144,7 +143,7 @@ export default function GestionEstudiantesAdmin() {
   } | null>(null);
 
   // Estados para paginación y filtros
-  const [pageSize, setPageSize] = useState<number>(20); // <-- Cambiado de 10 a 20
+  const [pageSize, setPageSize] = useState<number>(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<any>({});
@@ -201,8 +200,8 @@ export default function GestionEstudiantesAdmin() {
       
       // Construir parámetros de consulta
       const params = new URLSearchParams();
-      params.append('limit', pageSize === 'todos' ? '0' : pageSize.toString()); // Si 'todos', no aplicar límite
-      params.append('offset', ((currentPage - 1) * (pageSize === 'todos' ? 10000 : pageSize)).toString()); // Offset grande para 'todos'
+      params.append('limit', typeof pageSize === 'string' ? '0' : pageSize.toString()); // Si 'todos', no aplicar límite
+      params.append('offset', ((currentPage - 1) * (typeof pageSize === 'string' ? 10000 : pageSize)).toString()); // Offset grande para 'todos'
 
       // Agregar filtros
       if (filters.search) params.append('search', filters.search);
@@ -212,12 +211,12 @@ export default function GestionEstudiantesAdmin() {
       // Cambiar endpoint para admin:
       const response = await apiService.get(`/api/students/?${params.toString()}`);
       
-      console.log('📊 Datos recibidos del backend:', response.results);
-      console.log('🔍 Primer estudiante:', JSON.stringify(response.results?.[0], null, 2));
-      console.log('⏰ Horas permitidas del primer estudiante:', response.results?.[0]?.horas_permitidas);
+      console.log('📊 Datos recibidos del backend:', (response as any).results);
+      console.log('🔍 Primer estudiante:', JSON.stringify((response as any).results?.[0], null, 2));
+      console.log('⏰ Horas permitidas del primer estudiante:', (response as any).results?.[0]?.horas_permitidas);
       
       // Transformar los datos para que coincidan con la interfaz Student
-      const transformedStudents = (response.results || []).map((student: any) => {
+      const transformedStudents = ((response as any).results || []).map((student: any) => {
         // Calcular horas permitidas según nivel API si no viene del backend
         const calcularHorasPermitidas = (apiLevel: number) => {
           const apiToHours = {
@@ -257,7 +256,7 @@ export default function GestionEstudiantesAdmin() {
       });
       
       setStudents(transformedStudents);
-      setTotalCount(response.count || 0);
+      setTotalCount((response as any).count || 0);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al cargar estudiantes');
       setStudents([]);
@@ -277,7 +276,7 @@ export default function GestionEstudiantesAdmin() {
     try {
       // Obtener el historial de peticiones API del estudiante
       const apiRequestsResponse = await apiService.get('/api/students/admin/api-level-requests/');
-      const studentRequests = (apiRequestsResponse.results || []).filter(
+      const studentRequests = ((apiRequestsResponse as any).results || []).filter(
         (req: any) => req.student_id === parseInt(student.id)
       );
       
@@ -979,7 +978,7 @@ export default function GestionEstudiantesAdmin() {
               <Select
                 value={pageSize}
                 label="Mostrar"
-                onChange={(e) => setPageSize(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
+                onChange={(e) => setPageSize(e.target.value === 'todos' ? 1000000 : Number(e.target.value))}
                 sx={{ 
                   borderRadius: 2,
                   backgroundColor: themeMode === 'dark' ? '#334155' : '#ffffff',
@@ -1005,7 +1004,7 @@ export default function GestionEstudiantesAdmin() {
                 <MenuItem value={100}>100 últimos</MenuItem>
                 <MenuItem value={150}>150 últimos</MenuItem>
                 <MenuItem value={200}>200 últimos</MenuItem>
-                <MenuItem value={'todos'}>Todos</MenuItem>
+                <MenuItem value={1000000}>Todos</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -1134,7 +1133,7 @@ export default function GestionEstudiantesAdmin() {
         totalCount={totalCount}
         currentPage={currentPage}
         pageSize={pageSize}
-        pageSizeOptions={[20, 50, 100, 150, 200, 'todos']}
+        pageSizeOptions={[20, 50, 100, 150, 200, 1000000]}
         showPagination={false}
         showPageSizeSelector={false}
       />

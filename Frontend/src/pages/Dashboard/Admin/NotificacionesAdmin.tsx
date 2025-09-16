@@ -152,7 +152,7 @@ export default function NotificacionesAdmin() {
       console.log('Respuesta notificaciones masivas:', response);
       
       // El backend devuelve los datos en response.data.results
-      const data = response.data?.results || response.results || [];
+      const data = (response as any).data?.results || (response as any).results || [];
       console.log('Datos extraídos:', data);
       
       const formattedNotifications = Array.isArray(data) ? data.map((notification: any) => ({

@@ -6,6 +6,7 @@ Este archivo define las rutas específicas para los endpoints de desafíos colec
 
 from django.urls import path
 from . import views
+from . import views_ranking
 
 app_name = 'collective_challenges'
 
@@ -19,4 +20,8 @@ urlpatterns = [
     path('company/challenges/create/', views.api_challenge_create, name='api_challenge_create'),
     path('company/challenges/<uuid:challenge_id>/update/', views.api_challenge_update, name='api_challenge_update'),
     path('company/challenges/<uuid:challenge_id>/delete/', views.api_challenge_delete, name='api_challenge_delete'),
+    
+    # Endpoints para rankings y estadísticas
+    path('ranking/', views_ranking.api_collective_challenges_ranking, name='api_collective_challenges_ranking'),
+    path('teachers-ranking/', views_ranking.api_teachers_ranking, name='api_teachers_ranking'),
 ]
