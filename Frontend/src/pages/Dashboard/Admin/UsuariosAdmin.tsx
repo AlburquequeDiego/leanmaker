@@ -95,7 +95,7 @@ export default function UsuariosAdmin() {
   // Nuevos estados para alertas de confirmación
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<{
-    type: 'create' | 'update' | 'activate' | 'suspend' | 'block' | 'unblock';
+    type: 'create' | 'update' | 'activate' | 'suspend' | 'block' | 'unblock' | 'delete';
     message: string;
     userId?: string;
     userType?: string;
@@ -519,6 +519,35 @@ export default function UsuariosAdmin() {
         } catch (error) {
           console.error('Error unblocking user:', error);
           setError('Error al desbloquear el usuario');
+        }
+      }
+    });
+    setShowConfirmDialog(true);
+  };
+
+  // Función para manejar eliminación de usuarios
+  const handleDeleteUser = async (userId: string, userType: string) => {
+    const user = users.find(u => u.id === userId);
+    const userName = user ? `${user.first_name} ${user.last_name}` : 'este usuario';
+    
+    setConfirmAction({
+      type: 'delete',
+      message: `¿Estás seguro de que quieres ELIMINAR PERMANENTEMENTE a ${userName}? Esta acción no se puede deshacer y se perderán todos los datos asociados.`,
+      userId,
+      userType,
+      action: async () => {
+        try {
+          await apiService.delete(`/api/users/${userId}/`);
+          setSuccess(`${userType === 'student' ? 'Estudiante' : userType === 'company' ? 'Empresa' : userType === 'teacher' ? 'Docente' : 'Usuario'} eliminado exitosamente`);
+          await fetchUsers();
+          
+          // Sincronizar otras interfaces
+          setTimeout(() => {
+            refreshOtherInterfaces();
+          }, 200);
+        } catch (error) {
+          console.error('Error deleting user:', error);
+          setError('Error al eliminar el usuario');
         }
       }
     });
@@ -1005,6 +1034,25 @@ export default function UsuariosAdmin() {
                                 }}
                               >
                                 <LockOpenIcon />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                          <Tooltip title="Eliminar">
+                            <span>
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDeleteUser(user.id, user.user_type)}
+                                sx={{
+                                  background: 'linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%)',
+                                  color: 'white',
+                                  '&:hover': {
+                                    background: 'linear-gradient(135deg, #b71c1c 0%, #a01515 100%)',
+                                    transform: 'scale(1.1)',
+                                  }
+                                }}
+                              >
+                                <DeleteIcon />
                               </IconButton>
                             </span>
                           </Tooltip>
@@ -2240,6 +2288,7 @@ export default function UsuariosAdmin() {
              confirmAction?.type === 'suspend' ? 'Suspender Usuario' :
              confirmAction?.type === 'block' ? 'Bloquear Usuario' :
              confirmAction?.type === 'unblock' ? 'Desbloquear Usuario' :
+             confirmAction?.type === 'delete' ? 'Eliminar Usuario' :
              'Confirmar'}
           </Button>
         </DialogActions>
